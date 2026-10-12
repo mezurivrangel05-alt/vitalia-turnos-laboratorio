@@ -45,16 +45,16 @@ Abre `http://localhost:4200`. Angular envía las solicitudes a la API en el puer
 Es una base demostrativa: antes de manejar datos reales de pacientes se requiere autenticación, controles de acceso, política de privacidad, auditoría y despliegue seguro. No recopila resultados clínicos.
 # Despliegue en Vercel
 
-El repositorio debe importarse desde su carpeta raíz (la carpeta que contiene `vercel.json`). En Vercel configura:
+El repositorio debe importarse desde su carpeta raíz (la carpeta que contiene `vercel.json`). Como contiene Angular y Python, Vercel lo despliega como dos servicios bajo el mismo dominio:
 
-- **Root Directory:** `.` (la raíz del repositorio, no `frontend`).
-- **Framework Preset:** `Other`.
-- **Build Command:** `npm run build`.
-- **Output Directory:** `frontend/dist/vitalia/browser`.
-- **Install Command:** se puede dejar el valor predeterminado; el comando de build instala las dependencias de Angular.
+- **Root Directory:** `./` (la raíz del repositorio, no `frontend`).
+- **Framework Preset:** `Services`.
+- **Service `app`:** API Python desde la raíz del repositorio.
+- **Service `frontend`:** Angular desde `frontend/`.
+- **Routing:** `/api/*` llega a Python; las demás rutas llegan a Angular.
 - **Environment Variable:** `DATABASE_URL`, con la cadena de conexión PostgreSQL de una base de datos Neon.
 
-Las funciones Python viven en `api/` y guardan los turnos en PostgreSQL. No uses SQLite en Vercel: el disco de una función no es almacenamiento persistente. La API local (`py -m backend.server`) conserva SQLite para desarrollo.
+Las funciones Python viven en `api/` y guardan los turnos en PostgreSQL. No uses SQLite en Vercel: el disco de una función no es almacenamiento persistente. La API local (`py -m backend.server`) conserva SQLite para desarrollo. Vercel documenta los proyectos de varios servicios para desplegar frontend y backend juntos en un único dominio: https://vercel.com/docs/services.
 
 Al crear la base de datos Neon, copia la cadena de conexión PostgreSQL y guárdala como `DATABASE_URL` en **Project Settings → Environment Variables** de Vercel. No publiques esa cadena ni la agregues al repositorio.
 
