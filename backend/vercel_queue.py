@@ -58,6 +58,9 @@ def advance(db):
 
 def state():
     with connect() as db:
+        # Acquire the shared queue lock before schema/table locks. Mixing these
+        # lock orders with concurrent ticket creation can deadlock PostgreSQL.
+        db.execute("SELECT pg_advisory_xact_lock(731204)")
         initialize(db)
         advance(db)
         rows = db.execute("SELECT * FROM vitalia_tickets WHERE status != 'completed' ORDER BY created_at").fetchall()
@@ -74,8 +77,9 @@ def state():
 
 def create_ticket():
     with connect() as db:
-        initialize(db)
+        # All transactions take the queue lock before touching queue tables.
         db.execute("SELECT pg_advisory_xact_lock(731204)")
+        initialize(db)
         number = db.execute("SELECT nextval('vitalia_ticket_number') AS number").fetchone()["number"]
         ticket_id, created = str(uuid4()), now()
         code = f"A{number:03d}"
