@@ -61,7 +61,7 @@ class AppComponent implements OnInit {
   get occupied() { return this.state?.desks.filter(d => !!d.ticket).length ?? 0; }
   get waitEstimate() { return `~${Math.max(1, Math.ceil((this.state?.waiting_count ?? 0) * (this.state?.service_seconds ?? 30) / 60))} min`; }
   ngOnInit() { this.refresh(); setInterval(() => this.refresh(), 2500); }
-  refresh() { this.api.state().subscribe({ next: s => { this.detectDeskChanges(s); this.state = s; }, error: () => this.error = 'No se pudo conectar con el servidor de turnos. Reinicia la API Python para cargar la actualización.' }); }
+  refresh() { this.api.state().subscribe({ next: s => { this.detectDeskChanges(s); this.state = s; this.error = ''; }, error: () => this.error = 'No se pudo conectar con el servidor de turnos. Intenta de nuevo en unos segundos.' }); }
   goTo(section: 'turnos' | 'atencion') { this.section = section; document.getElementById(section)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   private prepareSound() { try { this.audioContext ??= new AudioContext(); void this.audioContext.resume(); this.soundEnabled = true; } catch { this.soundEnabled = false; } }
   enableSound() { this.prepareSound(); this.playBell(); }
