@@ -42,4 +42,20 @@ Abre `http://localhost:4200`. Angular envía las solicitudes a la API en el puer
 
 ## Nota
 
-Es una base demostrativa: antes de manejar datos reales de pacientes se requiere autenticación, controles de acceso, política de privacidad, auditoría y despliegue seguro. No recopila resultados clínicos. “Bsel” queda como destino futuro; aún no se conectó GitHub ni se desplegó.
+Es una base demostrativa: antes de manejar datos reales de pacientes se requiere autenticación, controles de acceso, política de privacidad, auditoría y despliegue seguro. No recopila resultados clínicos.
+# Despliegue en Vercel
+
+El repositorio debe importarse desde su carpeta raíz (la carpeta que contiene `vercel.json`). En Vercel configura:
+
+- **Root Directory:** `.` (la raíz del repositorio, no `frontend`).
+- **Framework Preset:** `Other`.
+- **Build Command:** `npm run build`.
+- **Output Directory:** `frontend/dist/vitalia/browser`.
+- **Install Command:** se puede dejar el valor predeterminado; el comando de build instala las dependencias de Angular.
+- **Environment Variable:** `DATABASE_URL`, con la cadena de conexión PostgreSQL de una base de datos Neon.
+
+Las funciones Python viven en `api/` y guardan los turnos en PostgreSQL. No uses SQLite en Vercel: el disco de una función no es almacenamiento persistente. La API local (`py -m backend.server`) conserva SQLite para desarrollo.
+
+Al crear la base de datos Neon, copia la cadena de conexión PostgreSQL y guárdala como `DATABASE_URL` en **Project Settings → Environment Variables** de Vercel. No publiques esa cadena ni la agregues al repositorio.
+
+Después de desplegar, abre `/api/state` en el dominio asignado para confirmar que la API responde. Si aparece `Falta configurar DATABASE_URL`, agrega la variable y vuelve a desplegar.
